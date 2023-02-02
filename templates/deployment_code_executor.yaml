@@ -14,19 +14,19 @@ spec:
   replicas: {{ .Values.codeExecutor.replicaCount }}
   selector:
     matchLabels:
-      retoolService: {{ template "retool.fullname" . }}-workflow-worker
+      retoolService: {{ template "retool.fullname" . }}-code-executor
   revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
   template:
     metadata:
       annotations:
-        prometheus.io/job: {{ template "retool.fullname" . }}-workflow-worker
+        prometheus.io/job: {{ template "retool.fullname" . }}-code-executor
         prometheus.io/scrape: 'true'
         prometheus.io/port: '9090'
 {{- if .Values.podAnnotations }}
 {{ toYaml .Values.podAnnotations | indent 8 }}
 {{- end }}
       labels:
-        retoolService: {{ template "retool.fullname" . }}-workflow-worker
+        retoolService: {{ template "retool.fullname" . }}-code-executor
 {{- if .Values.podLabels }}
 {{ toYaml .Values.podLabels | indent 8 }}
 {{- end }}
