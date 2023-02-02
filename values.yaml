@@ -298,10 +298,8 @@ resources:
   # - memory: 4096Mi
   # If you only have 1 replica, please double the above numbers.
   limits:
-    cpu: 4096m
     memory: 8192Mi
   requests:
-    cpu: 2048m
     memory: 4096Mi
 
 priorityClassName: ""
