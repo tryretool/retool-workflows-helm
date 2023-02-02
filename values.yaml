@@ -391,6 +391,11 @@ workflows:
       memory: 2048Mi
 
 codeExecutor:
+  image:
+    repository: ""
+    # You need to pick a specific tag here, this chart will not make a decision for you
+    tag: ""
+  pullPolicy: "IfNotPresent"
   replicaCount: 1
   # Resources for the code executor service - these are sane inputs that bias towards stability
   # Can adjust but may see OOM errors if memory too low for heavy code execution loads
