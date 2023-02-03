@@ -82,7 +82,7 @@ spec:
           - name: WORKFLOW_BACKEND_HOST
             value: http://{{ template "retool.fullname" . }}-workflow-backend
           - name: CODE_EXECUTOR_INGRESS_DOMAIN
-            value: http://{{ template "retool.fullname" . }}-code-executor:3004
+            value: http://{{ template "retool.fullname" . }}-ce:3004
           - name: CLIENT_ID
             value: {{ default "" .Values.config.auth.google.clientId }}
           - name: COOKIE_INSECURE
@@ -195,7 +195,7 @@ spec:
         {{- end }}
         ports:
         - containerPort: {{ .Values.service.internalPort }}
-          name: {{ template "retool.name" . }}
+          name: retool
           protocol: TCP
         - containerPort: 9090
           name: metrics
@@ -271,7 +271,7 @@ spec:
   - protocol: TCP
     port: {{ .Values.service.externalPort }}
     targetPort: {{ .Values.service.internalPort }}
-    name: {{ template "retool.name" . }}
+    name: retool
   - protocol: TCP
     port: 9090
     targetPort: metrics

@@ -90,7 +90,7 @@ spec:
           - name: WORKFLOW_BACKEND_HOST
             value: http://{{ template "retool.fullname" . }}-workflow-backend
           - name: CODE_EXECUTOR_INGRESS_DOMAIN
-            value: http://{{ template "retool.fullname" . }}-code-executor:3004
+            value: http://{{ template "retool.fullname" . }}-ce:3004
           {{- if and (not .Values.externalSecrets.enabled) (not .Values.externalSecrets.externalSecretsOperator.enabled) }}
           - name: LICENSE_KEY
             valueFrom:
@@ -176,7 +176,7 @@ spec:
         {{- end }}
         ports:
         - containerPort: {{ .Values.service.internalPort }}
-          name: {{ template "retool.name" . }}
+          name: retool
           protocol: TCP
 {{- if .Values.livenessProbe.enabled }}
         livenessProbe:
