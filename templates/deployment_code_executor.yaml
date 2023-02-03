@@ -2,9 +2,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "retool.fullname" . }}-code-executor
+  name: {{ template "retool.fullname" . }}-ce
   labels:
-    retoolService: {{ template "retool.fullname" . }}-code-executor
+    retoolService: {{ template "retool.fullname" . }}-ce
 {{- include "retool.labels" . | nindent 4 }}
 {{- if .Values.deployment.annotations }}
   annotations:
@@ -14,19 +14,19 @@ spec:
   replicas: {{ .Values.codeExecutor.replicaCount }}
   selector:
     matchLabels:
-      retoolService: {{ template "retool.fullname" . }}-code-executor
+      retoolService: {{ template "retool.fullname" . }}-ce
   revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
   template:
     metadata:
       annotations:
-        prometheus.io/job: {{ template "retool.fullname" . }}-code-executor
+        prometheus.io/job: {{ template "retool.fullname" . }}-ce
         prometheus.io/scrape: 'true'
         prometheus.io/port: '9090'
 {{- if .Values.podAnnotations }}
 {{ toYaml .Values.podAnnotations | indent 8 }}
 {{- end }}
       labels:
-        retoolService: {{ template "retool.fullname" . }}-code-executor
+        retoolService: {{ template "retool.fullname" . }}-ce
 {{- if .Values.podLabels }}
 {{ toYaml .Values.podLabels | indent 8 }}
 {{- end }}
@@ -47,15 +47,8 @@ spec:
 {{- end }}
       containers:
       - name: {{ .Chart.Name }}
-        image: "{{ .Values.codeExecutor.image.repository }}:{{ required "Please set a value for .Values.image.tag" .Values.image.tag }}"
+        image: "{{ .Values.codeExecutor.image.repository }}:{{ required "Please set a value for .Values.codeExecutor.image.tag" .Values.codeExecutor.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
-        args:
-          - bash
-          - -c
-          - chmod -R +x ./docker_scripts; sync; ./docker_scripts/wait-for-it.sh -t 0 {{ template "retool.postgresql.host" . }}:{{ template "retool.postgresql.port" . }}; ./docker_scripts/start_api.sh
-        {{- if .Values.commandline.args }}
-{{ toYaml .Values.commandline.args | indent 10 }}
-        {{- end }}
         env:
           - name: NODE_ENV
             value: production
@@ -63,7 +56,7 @@ spec:
             value: {{(.Values.workflows.config).nodeOptions | default "--max_old_space_size=1024" }}
         ports:
         - containerPort: 3004
-          name: {{ template "retool.name" . }}
+          name: retool
           protocol: TCP
 {{- if .Values.livenessProbe.enabled }}
         livenessProbe:
@@ -148,15 +141,15 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "retool.fullname" . }}-code-executor
+  name: {{ template "retool.fullname" . }}-ce
 spec:
   selector:
-    retoolService: {{ template "retool.fullname" . }}-code-executor
+    retoolService: {{ template "retool.fullname" . }}-ce
   ports:
   - protocol: TCP
     port: 3004
     targetPort: 3004
-    name: {{ template "retool.name" . }}
+    name: retool
   - protocol: TCP
     port: 9090
     targetPort: metrics

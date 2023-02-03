@@ -134,7 +134,7 @@ spec:
             - name: DEFAULT_NAMESPACE
               value: workflows
             - name: DB
-              value: postgresql
+              value: cassandra
             {{- if $.Values.server.config.persistence.default.sql.database }}
             - name: DBNAME
               value: "{{ $.Values.server.config.persistence.default.sql.database }}"
@@ -153,17 +153,6 @@ spec:
             - name: SQL_TLS_DISABLE_HOST_VERIFICATION
               value: "true"
             {{- end }}
-            - name: POSTGRES_HOST
-              value: "{{ $.Values.server.config.persistence.default.sql.host }}"
-            - name: POSTGRES_PORT
-              value: "{{ $.Values.server.config.persistence.default.sql.port }}"
-            - name: POSTGRES_USER
-              value: "{{ $.Values.server.config.persistence.default.sql.user }}"
-            - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "temporal.persistence.secretName" (list $ "default") }}
-                  key: {{ include "temporal.persistence.secretKey" (list $ "default") }}
             {{- if ne $service "frontend"}}
             - name: TEMPORAL_CLI_ADDRESS
               value: {{ include "temporal.fullname" $ }}-frontend:{{ include "temporal.frontend.grpcPort" $ }}
