@@ -102,14 +102,14 @@ spec:
           - name: POSTGRES_SSL_ENABLED
             value: {{ template "retool.postgresql.ssl_enabled" . }}
           {{- if and (((.Values.workflows.config).otelCollector).enabled) (((.Values.workflows.config).otelCollector).endpoint) }}
-          - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          - name: WORKFLOW_TEMPORAL_OPENTELEMETRY_COLLECTOR
              value: {{ ((.Values.workflows.config).otelCollector).endpoint }}
           {{- else if ((.Values.workflows.config).otelCollector).enabled }}
           - name: HOST_IP
             valueFrom:
               fieldRef:
                 fieldPath: status.hostIP
-          - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          - name: WORKFLOW_TEMPORAL_OPENTELEMETRY_COLLECTOR
             value: "http://$(HOST_IP):4317"
           {{- end }}
           {{- if and (not .Values.externalSecrets.enabled) (not .Values.externalSecrets.externalSecretsOperator.enabled) }}

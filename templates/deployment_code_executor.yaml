@@ -50,6 +50,8 @@ spec:
         privileged: true
         image: "{{ .Values.codeExecutor.image.repository }}:{{ required "Please set a value for .Values.codeExecutor.image.tag" .Values.codeExecutor.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
+        securityContext:
+          privileged: true
         env:
           - name: NODE_ENV
             value: production
