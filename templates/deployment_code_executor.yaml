@@ -47,7 +47,7 @@ spec:
 {{- end }}
       containers:
       - name: {{ .Chart.Name }}
-        image: "{{ .Values.codeExecutor.image.repository }}:{{ required "Please set a value for .Values.codeExecutor.image.tag" .Values.codeExecutor.image.tag }}"
+        image: "{{ .Values.codeExecutor.image.repository }}:{{ required "Please set a value for .Values.image.tag" .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         securityContext:
           privileged: true
