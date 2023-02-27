@@ -56,6 +56,10 @@ spec:
             value: production
           - name: NODE_OPTIONS
             value: {{(.Values.workflows.config).nodeOptions | default "--max_old_space_size=1024" }}
+          {{- range $key, $value := .Values.env }}
+          - name: "{{ $key }}"
+            value: "{{ $value }}"
+          {{- end }}
         ports:
         - containerPort: 3004
           name: retool
