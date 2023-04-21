@@ -53,7 +53,7 @@ spec:
 {{- end }}
       containers:
       - name: {{ .Chart.Name }}
-        image: "{{ .Values.image.repository }}:{{ required "Please set a value for .Values.image.tag" .Values.image.tag }}"
+        image: "{{ .Values.image.repository }}:{{ required template "Please set a value for .Values.image.tag" .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         args:
           - bash
