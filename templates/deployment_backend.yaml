@@ -90,7 +90,7 @@ spec:
           - name: WORKFLOW_BACKEND_HOST
             value: http://{{ template "retool.fullname" . }}-workflow-backend
           {{- end }}
-          {{- if (.Values.workflows.temporal).ssl_enabled }}
+          {{- if (.Values.workflows.temporal).sslEnabled }}
           - name: WORKFLOW_TEMPORAL_TLS_ENABLED
             value: "true"
           {{- if (and (.Values.workflows.temporal).sslCert (.Values.workflows.temporal).sslKey) }}

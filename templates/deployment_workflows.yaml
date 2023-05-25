@@ -73,7 +73,7 @@ spec:
             value: {{ template "retool.temporal.port" . }}
           - name: WORKFLOW_TEMPORAL_CLUSTER_NAMESPACE
             value: {{ template "retool.temporal.namespace" . }}
-          {{- if (.Values.workflows.temporal).ssl_enabled }}
+          {{- if (.Values.workflows.temporal).sslEnabled }}
           - name: WORKFLOW_TEMPORAL_TLS_ENABLED
             value: "true"
           {{- if (and (.Values.workflows.temporal).sslCert (.Values.workflows.temporal).sslKey) }}
