@@ -89,7 +89,7 @@ data:
                     scheme: "{{ $.Values.elasticsearch.scheme }}"
                     host: "{{ $.Values.elasticsearch.host }}:{{ $.Values.elasticsearch.port }}"
                 username: "{{ $.Values.elasticsearch.username }}"
-                password: "{{ `{{ default .Env.ES_PWD $.Values.elasticsearch.password }}` }}"
+                password: "{{ $.Values.elasticsearch.password }}"
                 logLevel: "{{ $.Values.elasticsearch.logLevel }}"
                 indices:
                     visibility: "{{ $.Values.elasticsearch.visibilityIndex }}"

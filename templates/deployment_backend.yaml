@@ -32,6 +32,10 @@ spec:
 {{ toYaml .Values.backend.labels | indent 8 }}
 {{- end }}
     spec:
+      hostAliases:
+      - ip: "170.20.16.33"
+        hostnames:
+        - "admin.retool.dev"
       serviceAccountName: {{ template "retool.serviceAccountName" . }}
       {{- if .Values.priorityClassName }}
       priorityClassName: "{{ .Values.priorityClassName }}"
@@ -82,31 +86,13 @@ spec:
             value: {{ template "retool.postgresql.ssl_enabled" . }}
           {{- if .Values.workflows.enabled }}
           - name: WORKFLOW_TEMPORAL_CLUSTER_FRONTEND_HOST
-            value: {{ template "retool.temporal.host" . }}
+            value: {{ template "temporal.fullname" (index .Subcharts "retool-temporal-services-helm") }}-frontend
           - name: WORKFLOW_TEMPORAL_CLUSTER_FRONTEND_PORT
-            value: {{ template "retool.temporal.port" . }}
-          - name: WORKFLOW_TEMPORAL_CLUSTER_NAMESPACE
-            value: {{ template "retool.temporal.namespace" . }}
+            value: "7233"
           - name: WORKFLOW_BACKEND_HOST
             value: http://{{ template "retool.fullname" . }}-workflow-backend
-          {{- end }}
-          {{- if (.Values.workflows.temporal).sslEnabled }}
-          - name: WORKFLOW_TEMPORAL_TLS_ENABLED
-            value: "true"
-          {{- if (and (.Values.workflows.temporal).sslCert (.Values.workflows.temporal).sslKey) }}
-          - name: WORKFLOW_TEMPORAL_TLS_CRT
-            value: {{ .Values.workflows.temporal.sslCert }}
-          - name: WORKFLOW_TEMPORAL_TLS_KEY
-            valueFrom:
-              secretKeyRef:
-              {{- if (.Values.workflows.temporal).sslKeySecretName }}
-                name: {{ .Values.workflows.temporal.sslKeySecretName }}
-                key: {{ .Values.workflows.temporal.sslKeySecretKey | default "temporal-tls-key" }}
-              {{- else }}
-                name: {{ template "retool.fullname" . }}
-                key: "temporal-tls-key"
-              {{- end }}
-          {{- end }}
+          - name: CODE_EXECUTOR_INGRESS_DOMAIN
+            value: http://{{ template "retool.fullname" . }}-ce:3004
           {{- end }}
           {{- if and (not .Values.externalSecrets.enabled) (not .Values.externalSecrets.externalSecretsOperator.enabled) }}
           - name: LICENSE_KEY
@@ -193,7 +179,7 @@ spec:
         {{- end }}
         ports:
         - containerPort: {{ .Values.service.internalPort }}
-          name: {{ template "retool.name" . }}
+          name: retool
           protocol: TCP
 {{- if .Values.livenessProbe.enabled }}
         livenessProbe:

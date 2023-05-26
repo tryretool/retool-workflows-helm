@@ -232,7 +232,7 @@ spec:
       {{- end }}
 ---
 {{- end }}
-{{- if and $.Values.elasticsearch.autosetup (or $.Values.elasticsearch.enabled $.Values.elasticsearch.external) }}
+{{- if or $.Values.elasticsearch.enabled $.Values.elasticsearch.external }}
 apiVersion: batch/v1
 kind: Job
 metadata:

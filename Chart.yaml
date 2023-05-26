@@ -1,16 +1,17 @@
 apiVersion: v2
-name: retool-wf
-description: A Helm chart for Kubernetes
-type: application
-version: 4.11.12
-maintainers:
-  - name: Retool Engineering
-    email: engineering+helm@retool.com
 dependencies:
-  - name: postgresql
-    version: 12.1.5
-    repository: https://charts.bitnami.com/bitnami
-    condition: postgresql.enabled
-  - name: retool-temporal-services-helm
-    version: 1.1.0
-    condition: retool-temporal-services-helm.enabled,workflows.enabled
+- condition: postgresql.enabled
+  name: postgresql
+  repository: https://charts.bitnami.com/bitnami
+  version: 12.1.5
+- condition: workflows.enabled
+  name: retool-temporal-services-helm
+  repository: ""
+  version: 1.0.0
+description: A Helm chart for Kubernetes
+maintainers:
+- email: engineering+helm@retool.com
+  name: Retool Engineering
+name: retool
+type: application
+version: 4.11.9

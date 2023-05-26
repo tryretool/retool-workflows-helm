@@ -45,17 +45,11 @@ config:
 
 retool-temporal-services-helm:
   server:
-    # Disable this if using your own Temporal Cluster
-    enabled: true
     # Defines image to be used for temporal server
     image:
       repository: tryretool/one-offs
       tag: retool-temporal-1.1.1
       pullPolicy: IfNotPresent
-    # this configures grpc_health_probe (https://github.com/grpc-ecosystem/grpc-health-probe)
-    # for healthchecks instead of native k8s.
-    # Set this to true if deploying in a k8s cluster on version <1.24
-    useLegacyHealthProbe: false
     config:
       # the below values specify the database for temporal internals and workflow state
       # both can point to the same db, and even the same as retool main above, although throughput
@@ -70,7 +64,7 @@ retool-temporal-services-helm:
             # database: temporal
             # user:
             # password:
-            # existingSecret is the name of the secret where password is stored
+            # secretName is the name of the secret where password is stored
             # existingSecret:
             # secretKey is the key in the k8s secret
             # secretKey:
@@ -90,7 +84,7 @@ retool-temporal-services-helm:
             # database: temporal_visibility
             # user:
             # password:
-            # existingSecret is the name of the secret where password is stored
+            # secretName is the name of the secret where password is stored
             # existingSecret:
             # secretKey is the key in the k8s secret
             # secretKey:
@@ -145,7 +139,7 @@ retool-temporal-services-helm:
     enabled: false
 
 image:
-  repository: "tryretool/backend"
+  repository: "tryretool/backend-workflow"
   # You need to pick a specific tag here, this chart will not make a decision for you
   tag: ""
   pullPolicy: "IfNotPresent"
@@ -304,11 +298,9 @@ resources:
   # - memory: 4096Mi
   # If you only have 1 replica, please double the above numbers.
   limits:
-    cpu: 4096m
     memory: 8192Mi
   requests:
-    cpu: 1024m
-    memory: 2048Mi
+    memory: 4096Mi
 
 priorityClassName: ""
 
@@ -329,7 +321,7 @@ podAnnotations: {}
 
 # Increasing replica count will deploy a separate pod for backend and jobs
 # Example: with 3 replicas, you will end up with 3 backends + 1 jobs pod
-replicaCount: 1
+replicaCount: 2
 revisionHistoryLimit: 3
 
 # Optional pod disruption budget, for ensuring higher availability of the
@@ -374,29 +366,6 @@ workflows:
   # Labels for workflows worker pods
   labels: {}
 
-  # IMPORTANT: Incompatible with retool-temporal-services-helm subchart
-  # This allows configuring a Retool Workflows deployment that uses your own Temporal cluster
-  # instead of deploying a new one. Set enabled to true and add the config variables.
-  # NOTE: Temporal Frontend with required TLS or mTLS not currently supported
-  temporal: {}
-    # set enabled to true if using a pre-existing temporal cluster
-    # enabled: false
-    # discoverable service name for the temporal frontend service
-    # host:
-    # discoverable service port for the temporal frontend service
-    # port:
-    # temporal namespace to use for Temporal Workflows related to Retool
-    # namespace:
-    # whether to use TLS/SSL when connecting to Temporal
-    # sslEnabled: false
-    # base64 encoded string of TLS/SSL client certificate to use for mTLS
-    # sslCert:
-    # base64 encoded string of TLS/SSL client certificate secret key to use for mTLS
-    # sslKey:
-    # recommended alternative to sslKey. Name and key of k8s secret containing base64 encoded sslKey
-    # sslKeySecretName:
-    # sslKeySecretKey
-
   # Config for workflows worker pods. Node heap size limits can be overriden here
   # otelCollector can be set to an OpenTelemetry Collector in your k8s cluster. This will configure Temporal metrics collection which
   # provides observability into Workflows worker performance, particularly useful in high QPS use-cases
@@ -417,7 +386,27 @@ workflows:
       memory: 8192Mi
     requests:
       cpu: 1000m
-      memory: 2048Mi
+      memory: 4096Mi
+
+codeExecutor:
+  image:
+    repository: ""
+    # You need to pick a specific tag here, this chart will not make a decision for you
+    tag: ""
+  pullPolicy: "IfNotPresent"
+  replicaCount: 1
+  # Resources for the code executor service - these are sane inputs that bias towards stability
+  # Can adjust but may see OOM errors if memory too low for heavy code execution loads
+  resources:
+    limits:
+      cpu: 2000m
+      memory: 8192Mi
+    requests:
+      cpu: 1000m
+      memory: 4096Mi
+
+  # Labels for code executor pods
+  labels: {}
 
 persistentVolumeClaim:
   # set to true to use pvc

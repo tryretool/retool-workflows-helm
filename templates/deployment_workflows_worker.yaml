@@ -76,33 +76,15 @@ spec:
           - name: DISABLE_DATABASE_MIGRATIONS
             value: "true"
           - name: WORKFLOW_TEMPORAL_CLUSTER_FRONTEND_HOST
-            value: {{ template "retool.temporal.host" . }}
+            value: {{ template "temporal.fullname" (index .Subcharts "retool-temporal-services-helm") }}-frontend
           - name: WORKFLOW_TEMPORAL_CLUSTER_FRONTEND_PORT
-            value: {{ template "retool.temporal.port" . }}
-          - name: WORKFLOW_TEMPORAL_CLUSTER_NAMESPACE
-            value: {{ template "retool.temporal.namespace" . }}
-          {{- if (.Values.workflows.temporal).sslEnabled }}
-          - name: WORKFLOW_TEMPORAL_TLS_ENABLED
-            value: "true"
-          {{- if (and (.Values.workflows.temporal).sslCert (.Values.workflows.temporal).sslKey) }}
-          - name: WORKFLOW_TEMPORAL_TLS_CRT
-            value: {{ .Values.workflows.temporal.sslCert }}
-          - name: WORKFLOW_TEMPORAL_TLS_KEY
-            valueFrom:
-              secretKeyRef:
-              {{- if (.Values.workflows.temporal).sslKeySecretName }}
-                name: {{ .Values.workflows.temporal.sslKeySecretName }}
-                key: {{ .Values.workflows.temporal.sslKeySecretKey | default "temporal-tls-key" }}
-              {{- else }}
-                name: {{ template "retool.fullname" . }}
-                key: "temporal-tls-key"
-              {{- end }}
-          {{- end }}
-          {{- end }}
+            value: "7233"
           - name: WORKFLOW_WORKER_HEALTHCHECK_PORT
             value: "3005"
           - name: WORKFLOW_BACKEND_HOST
             value: http://{{ template "retool.fullname" . }}-workflow-backend
+          - name: CODE_EXECUTOR_INGRESS_DOMAIN
+            value: http://{{ template "retool.fullname" . }}-ce:3004
           - name: CLIENT_ID
             value: {{ default "" .Values.config.auth.google.clientId }}
           - name: COOKIE_INSECURE
@@ -120,14 +102,14 @@ spec:
           - name: POSTGRES_SSL_ENABLED
             value: {{ template "retool.postgresql.ssl_enabled" . }}
           {{- if and (((.Values.workflows.config).otelCollector).enabled) (((.Values.workflows.config).otelCollector).endpoint) }}
-          - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          - name: WORKFLOW_TEMPORAL_OPENTELEMETRY_COLLECTOR
              value: {{ ((.Values.workflows.config).otelCollector).endpoint }}
           {{- else if ((.Values.workflows.config).otelCollector).enabled }}
           - name: HOST_IP
             valueFrom:
               fieldRef:
                 fieldPath: status.hostIP
-          - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          - name: WORKFLOW_TEMPORAL_OPENTELEMETRY_COLLECTOR
             value: "http://$(HOST_IP):4317"
           {{- end }}
           {{- if and (not .Values.externalSecrets.enabled) (not .Values.externalSecrets.externalSecretsOperator.enabled) }}
@@ -215,7 +197,7 @@ spec:
         {{- end }}
         ports:
         - containerPort: 3005
-          name: {{ template "retool.name" . }}
+          name: retool
           protocol: TCP
         - containerPort: 9090
           name: metrics
@@ -311,7 +293,7 @@ spec:
   - protocol: TCP
     port: 3005
     targetPort: 3005
-    name: {{ template "retool.name" . }}
+    name: retool
   - protocol: TCP
     port: 9090
     targetPort: metrics
