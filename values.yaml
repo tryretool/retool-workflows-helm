@@ -306,9 +306,11 @@ resources:
   limits:
     cpu: 4096m
     memory: 8192Mi
+    ephemeral-storage: 1Gi
   requests:
     cpu: 1024m
     memory: 2048Mi
+    ephemeral-storage: 512Mi
 
 priorityClassName: ""
 
@@ -415,9 +417,11 @@ workflows:
     limits:
       cpu: 2000m
       memory: 8192Mi
+      ephemeral-storage: 1Gi
     requests:
       cpu: 1000m
       memory: 2048Mi
+      ephemeral-storage: 512Mi
 
 codeExecutor:
   # Enable this for Python support and running code more securely within a separate
