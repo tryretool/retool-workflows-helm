@@ -306,7 +306,7 @@ apiVersion: policy/v1beta1
 {{- end }}
 kind: PodDisruptionBudget
 metadata:
-  name: {{ template "retool.fullname" . }}
+  name: {{ template "retool.fullname" . }}-workflow-worker
 spec:
   {{ toYaml .Values.podDisruptionBudget }}
   selector:
