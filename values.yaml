@@ -244,6 +244,17 @@ ingress:
   # - host: retool.example.com
   #   paths:
   #     - path: /
+  # For supporting other ingress controllers that require customizing the .backend.service.name and .backend.service.port.name, 
+  # like AWS ALB extraPaths allows that customization, and it takes precedence in the list of paths of for the host, 
+  # this is in order to allow a rule like ssl-redirect from port 80-->443 to be first ( otherwise there wouldn't be a redirect )
+  #   extraPaths:
+  #     - path: /*
+  #       backend:
+  #         service:
+  #           name: ssl-redirect
+  #           port:
+  #             name: use-annotation
+  #       pathType: ImplementationSpecific
   tls:
   # - secretName: retool.example.com
   #   hosts:

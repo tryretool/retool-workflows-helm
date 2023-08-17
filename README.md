@@ -77,6 +77,8 @@ Modify `values.yaml`:
 - If you are implementing TLS for your Retool instance, uncomment `ingress.tls` and:
     - Specify the name of the SSL certificate to use as the value of `ingress.tls.secretName`.
     - Specify an array containing the hostname where you will access Retool (the same value you configured for `ingress.hosts.host`).
+- If you are want more control over the the ingress path, for example in order to create a rediect from port 80 to 443 with aws-load-balancer-controller, you may use `ingress.extraPaths`
+    - Specify the full object of a valid ingress path like shown in [k8s docs](https://kubernetes.io/docs/concepts/services-networking/ingress/#the-ingress-resource) or in [values.yaml: ingress.extraPaths](values.yaml#L250)
 
 GKE-specific configurations:
 
